@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Montana AI Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0b141a;
+            --header-bg: #111b21;
+            --search-bg: #202c33;
+            --text-main: #e9edef;
+            --text-dim: #8696a0;
+            --wa-green: #00a884;
+            --bubble-bg: #202c33;
+            --accent-glow: #00f2c3;
+            --btn-dark: #052d2e;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #app-wrapper {
+            display: flex;
+            width: 200vw;
+            height: 100vh;
+            transition: transform 0.3s ease;
+        }
+
+        .page { width: 100vw; height: 100%; display: flex; flex-direction: column; }
+
+        /* --- STYLING DAFTAR CHAT --- */
+        .list-nav { background: var(--header-bg); padding: 15px 16px; display: flex; justify-content: space-between; align-items: center; }
+        .list-nav h2 { font-size: 22px; font-weight: 500; }
+        
+        .search-area { padding: 10px 16px; }
+        .search-pill {
+            background: var(--search-bg);
+            border-radius: 20px;
+            padding: 10px 15px;
+            color: var(--text-dim);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-container { flex: 1; overflow-y: auto; }
+        .chat-link { text-decoration: none; color: inherit; display: block; cursor: pointer; }
+        
+        .chat-row {
+            display: flex;
+            padding: 12px 16px;
+            align-items: center;
+            border-bottom: 0.1px solid #222d34;
+        }
+        .chat-row:active { background: #202c33; }
+        
+        .img-placeholder {
+            width: 50px; height: 50px; border-radius: 50%;
+            background: #3d464d; margin-right: 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; background-image: linear-gradient(45deg, #00a884, #052d2e);
+        }
+
+        .row-info { flex: 1; }
+        .row-top { display: flex; justify-content: space-between; align-items: center; }
+        .row-name { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+        .row-time { font-size: 12px; color: var(--text-dim); }
+        .row-preview { font-size: 13px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* --- STYLING CHAT ROOM --- */
+        .chat-head {
+            background: var(--header-bg);
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .back-btn { padding: 5px; cursor: pointer; }
+        .avatar-main { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .head-info { flex: 1; }
+        .head-info h4 { font-size: 15px; }
+        .head-info p { font-size: 11px; color: var(--text-dim); }
+        
+        /* Style Tombol Menu Utama */
+        .btn-menu-utama {
+            background: var(--btn-dark);
+            color: var(--accent-glow);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer; /* Menandakan bisa diklik */
+            border: 1px solid var(--accent-glow);
+            transition: 0.2s;
+        }
+        .btn-menu-utama:hover { background: var(--accent-glow); color: var(--btn-dark); }
+
+        .status-strip {
+            background: #182229;
+            text-align: center;
+            padding: 6px;
+            font-size: 12px;
+            color: var(--text-dim);
+            border-bottom: 1px solid #222d34;
+        }
+
+        .message-area {
+            flex: 1;
+            padding: 20px;
+            background: #0b141a;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .msg-bubble {
+            background: var(--bubble-bg);
+            padding: 12px;
+            border-radius: 0 12px 12px 12px;
+            max-width: 85%;
+            font-size: 14px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .msg-time {
+            text-align: right;
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-top: 5px;
+        }
+
+        .input-box-area {
+            background: var(--header-bg);
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .fake-input {
+            background: #2a3942;
+            flex: 1;
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: var(--text-dim);
+            font-size: 15px;
+        }
+        .send-btn {
+            background: var(--wa-green);
+            width: 45px; height: 45px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-wrapper">
+    
+    <div class="page">
+        <div class="list-nav">
+            <h2>WhatsApp</h2>
+            <div style="display:flex; gap: 20px;">
+                <i class="fa-solid fa-camera"></i>
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </div>
+        </div>
+
+        <div class="search-area">
+            <div class="search-pill">
+                <i class="fa-solid fa-circle-notch" style="color: #24a1de;"></i>
+                Tanya Meta AI atau Cari
+            </div>
+        </div>
+
+        <div class="chat-container" id="chat-list-target">
+        </div>
+    </div>
+
+    <div class="page">
+        <div class="chat-head">
+            <div class="back-btn" onclick="goToMenu()">
+                <i class="fa-solid fa-arrow-left"></i>
+            </div>
+            <img src="https://i.pravatar.cc/100?u=montana" class="avatar-main">
+            <div class="head-info">
+                <h4 id="active-title">Montana AI</h4>
+                <p id="active-sub">Chat Assistant</p>
+            </div>
+            
+            <div class="btn-menu-utama" onclick="goToMenu()">Menu Utama</div>
+        </div>
+
+        <div class="status-strip">Sistem Terhubung</div>
+
+        <div class="message-area">
+            <div class="msg-bubble">
+                <div id="text-content">Memproses permintaan...</div>
+                <div class="msg-time" id="real-time-stamp">00.00</div>
+            </div>
+        </div>
+
+        <div class="input-box-area">
+            <div class="fake-input">Ketik perintah...</div>
+            <div class="send-btn"><i class="fa-solid fa-paper-plane" style="color:white"></i></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- KONFIGURASI LINK (GANTI DI SINI) ---
+    const MontanaData = [
+        { name: "Montana Ai nursery Analisis Penalaran tinggi", sub: "Nursery Analytics", link: "https://script.google.com/macros/s/AKfycbz3S80Wk1PWG0mZXRyLiRcLS2_197uNaTN7UwXdW6c9gomKqtLEZXYXU30jQ3B8ABSf/exec" },
+        { name: "Montana Ai nursery menjawab cepat", sub: "Nursery Analytics", link: "https://ebastari.github.io/MontanaAI/Montana%20AI%20Sederhana.html" },
+        { name: "Montana Ai Realisasi Pekerjaan", sub: "Geotegging Analytics", link: "https://script.google.com/macros/s/AKfycbzdqwN1QpGRJQ-pDKQ9UcB6P_JdUCdcp3gK_3Un-UyzdXsyEGpUh52qTWUsGbwQOCcj/exec" },
+        { name: "Montana Ai planning", sub: "Planning Analytics", link: "https://ebastari.github.io/AI-montana-Penamanan/AI%20Montana%20-%20Penanaman" },
+        { name: "Montana Ai kesehatan daun", sub: "Leaf Health Analytics", link: "https://ebastari.github.io/Kesehatan-Daun-AI/Kesehatan%20Daun%20AI.html" },
+        { name: "Montana Ai organisasi", sub: "Organization Analytics", link: "https://script.google.com/macros/s/AKfycbxSHpjTU6hTcygf4yWl88mEPgk7mnrt0o-kFWvHNQn5SqABkYn_ium1w4PdNFXdJ3Fj5A/exec" },
+        { name: "Montana Ai bantuan", sub: "Support Analytics", link: "https://script.google.com/macros/s/AKfycbwBhtUghMxg6eytCF-3sDIBufmeYveZ9rBbKVStrmaX8AuAGa-G8RuJ6Zo0W_RI60ro/exec" },
+        { name: "Montana Ai pemberitahuan sistem", sub: "System Analytics", link: "https://script.google.com/macros/s/AKfycbwY5jFwmcNwQNHaSeRyuQV57mWVL9Ls6XIpt9dDA4SqCMwIOMUVRhMc6DSnWIeojabk/exec" }
+    ];
+
+    const listTarget = document.getElementById('chat-list-target');
+    const wrapper = document.getElementById('app-wrapper');
+
+    function getNow() {
+        const d = new Date();
+        return d.getHours().toString().padStart(2, '0') + '.' + d.getMinutes().toString().padStart(2, '0');
+    }
+
+    // Render Daftar Chat
+    MontanaData.forEach((item, index) => {
+        const html = `
+            <div class="chat-link" onclick="handleChatClick(event, ${index})">
+                <div class="chat-row">
+                    <div class="img-placeholder">${item.name.split(' ')[2].charAt(0).toUpperCase()}</div>
+                    <div class="row-info">
+                        <div class="row-top">
+                            <span class="row-name">${item.name}</span>
+                            <span class="row-time">${getNow()}</span>
+                        </div>
+                        <div class="row-preview">Tanyakan Sesuatu kepada montana Ai sesuai Dengan bidangnya....</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        listTarget.innerHTML += html;
+    });
+
+    function handleChatClick(e, index) {
+        const item = MontanaData[index];
+        
+        document.getElementById('active-title').innerText = item.name;
+        document.getElementById('active-sub').innerText = "Chat Assistant — " + item.sub;
+        document.getElementById('real-time-stamp').innerText = getNow();
+        document.getElementById('text-content').innerText = "Membuka dashboard " + item.name + "... Aplikasi ini saat ini masih menggunakan pendanaan pribadi. Oleh karena itu, mohon gunakan fitur AI dengan bijak, seperlunya, dan bertanggung jawab agar layanan dapat terus berjalan dengan baik..";
+        
+        wrapper.style.transform = 'translateX(-100vw)';
+        
+        // Timer pindah link (bisa anda ganti 2000 = 2 detik)
+        setTimeout(() => {
+            window.location.href = item.link;
+        }, 2000); 
+    }
+
+    // FUNGSI UNTUK KEMBALI (Dipakai tombol Back dan tombol Menu Utama)
+    function goToMenu() {
+        wrapper.style.transform = 'translateX(0)';
+    }
+</script>
+
+</body>
+</html>
